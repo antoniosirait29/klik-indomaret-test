@@ -1,6 +1,10 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
+const bravePath =
+  process.env.BRAVE_PATH ||
+  'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe';
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: false,
@@ -9,7 +13,6 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [['list'], ['html', { open: 'never' }]],
 
-  // Give dynamic e-commerce pages enough time without hiding genuine failures.
   timeout: 60_000,
   expect: {
     timeout: 10_000,
@@ -28,6 +31,17 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // Uses the locally installed Brave executable for compatibility testing.
+      // Set BRAVE_PATH if Brave is installed in a different location.
+      name: 'brave',
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          executablePath: bravePath,
+        },
+      },
     },
   ],
 });
